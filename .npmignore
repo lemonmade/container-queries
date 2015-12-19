@@ -1,0 +1,10 @@
+*.log
+/.*/
+/coverage/
+/test/
+/.eslint*
+/.gitignore
+/.npmignore
+/.travis.yml
+/webpack.*
+/karma.*

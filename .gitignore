@@ -1,0 +1,8 @@
+.DS_STORE
+node_modules
+*.log
+.idea
+coverage
+*.sublime-*
+dist
+lib
