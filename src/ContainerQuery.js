@@ -1,49 +1,46 @@
 import Query from './Query';
+import ResizeDetector from './ResizeDetector';
 
 export class ContainerQuery {
-  constructor(node) {
+  constructor(node, resizeDetectorFactory = ResizeDetector.for) {
     this.node = node;
     this.width = 0;
     this.queries = [];
+
+    this.update = ::this.update;
+    this.resizeDetector = resizeDetectorFactory(this.node && this.node.parentNode);
+    this.resizeDetector.addListener(this.update);
   }
 
-  update() {
-    this.width = this._resizeDetector.contentDocument.body.clientWidth;
-    let matches = this.queries.filter((query) => {
-      query.update(this.width);
+  update(width = this.resizeDetector.width) {
+    let {queries, node} = this;
+
+    let matches = queries.filter((query) => {
+      query.update(width);
       return query.matches;
     }).map((query) => query.identifier);
-    this.node.setAttribute('data-matching-queries', matches.join(' '));
+
+    node.setAttribute('data-matching-queries', matches.join(' '));
   }
 
   addQuery(options) {
-    if (this._resizeDetector == null && this.node.parentNode != null) {
-      let resizeDetector = createResizeDetector();
-
-      resizeDetector.onload = (event) => {
-        let content = event.target.contentDocument.defaultView;
-        content.addEventListener('resize', ::this.update);
-        this.update();
-      };
-
-      resizeDetector.data = 'about:blank';
-
-      let {parentNode} = this.node;
-      positionElementRelatively(parentNode);
-      parentNode.appendChild(resizeDetector);
-
-      this._resizeDetector = resizeDetector;
-    }
-
     let newQuery = new Query(options);
     this.queries.push(newQuery);
     return newQuery;
   }
+
+  destroy() {
+    this.queries = [];
+    delete this.node;
+
+    this.resizeDetector.removeListener(this.update);
+    delete this.resizeDetector;
+  }
 }
 
 export class MultipleNodeContainerQuery {
-  constructor(nodes) {
-    this.containerQueries = toArray(nodes).map((node) => new ContainerQuery(node));
+  constructor(nodes, resizeDetectorFactory) {
+    this.containerQueries = toArray(nodes).map((node) => new ContainerQuery(node, resizeDetectorFactory));
   }
 
   update() {
@@ -53,40 +50,12 @@ export class MultipleNodeContainerQuery {
   addQuery(options) {
     this.containerQueries.forEach((cq) => cq.addQuery(options));
   }
-}
 
-let objectStyle = `
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-  pointer-events: none;
-  z-index: -1;
-`;
-
-function toArray(arrayLike) {
-  return Array.prototype.slice.apply(arrayLike);
-}
-
-function createResizeDetector() {
-  let obj = document.createElement('object');
-  obj.style.cssText = objectStyle;
-  obj.tabindex = -1;
-
-  return obj;
-}
-
-let relativePositionValues = ['relative', 'absolute', 'fixed'];
-
-function positionElementRelatively(element) {
-  if (relativePositionValues.indexOf(getComputedStyle(element, 'position')) < 0) {
-    element.style.position = 'relative';
+  destroy() {
+    this.containerQueries.forEach((cq) => cq.destroy());
   }
 }
 
-function getComputedStyle(element, prop) {
-  return window.getComputedStyle(element, null).getPropertyValue(prop);
+function toArray(arrayLike) {
+  return Array.prototype.slice.apply(arrayLike);
 }
