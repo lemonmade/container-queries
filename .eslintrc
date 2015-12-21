@@ -3,5 +3,8 @@
   "env": {
     "es6": true,
     "browser": true
+  },
+  "rules": {
+    "shopify/require-flow": [2, "never"]
   }
 }

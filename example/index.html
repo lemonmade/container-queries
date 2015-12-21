@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="text/javascript" src="../dist/container-queries.js"></script>
+  <meta charset="UTF-8">
+  <title>Document</title>
+
+  <style type="text/css">
+    .container {
+      display: flex;
+    }
+
+    .container > * { flex: 1; }
+
+    .foo {
+      padding: 1rem;
+      background: gray;
+    }
+
+    .foo[data-matching-queries~=">=500"] {
+      background: blue;
+    }
+
+    .foo[data-matching-queries~=">=1000"] {
+      background: red;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <div class="foo"></div>
+
+    <div class="container">
+      <div><div class="foo"></div></div>
+      <div><div class="foo"></div></div>
+    </div>
+  </div>
+
+  <script>
+    var nodes = [].slice.call(document.querySelectorAll('.foo'));
+
+    nodes.forEach(function(node) {
+      var cq = new ContainerQueries.default(node);
+      cq.addQuery({min: 500});
+      cq.addQuery({min: 1000});
+    });
+  </script>
+</body>
+</html>
