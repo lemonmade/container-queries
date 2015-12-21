@@ -15,13 +15,25 @@
     .foo {
       padding: 1rem;
       background: gray;
+      position: relative;
     }
 
-    .foo[data-matching-queries~=">=500"] {
+    .foo:after {
+      font-family: sans-serif;
+      content: attr(data-matching-queries);
+      display: block;
+      color: white;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .foo[data-matching-queries~="medium"] {
       background: blue;
     }
 
-    .foo[data-matching-queries~=">=1000"] {
+    .foo[data-matching-queries~="large"] {
       background: red;
     }
   </style>
@@ -36,13 +48,84 @@
     </div>
   </div>
 
-  <script>
-    var nodes = [].slice.call(document.querySelectorAll('.foo'));
+  <div class="foo"></div>
 
-    nodes.forEach(function(node) {
-      var cq = new ContainerQueries.default(node);
-      cq.addQuery({min: 500});
-      cq.addQuery({min: 1000});
+    <div class="container">
+      <div><div class="foo"></div></div>
+      <div><div class="foo"></div></div>
+    </div>
+  </div>
+
+  <div class="foo"></div>
+
+    <div class="container">
+      <div><div class="foo"></div></div>
+      <div><div class="foo"></div></div>
+    </div>
+  </div>
+
+  <div class="foo"></div>
+
+    <div class="container">
+      <div><div class="foo"></div></div>
+      <div><div class="foo"></div></div>
+    </div>
+  </div>
+
+  <div class="foo"></div>
+
+    <div class="container">
+      <div><div class="foo"></div></div>
+      <div><div class="foo"></div></div>
+    </div>
+  </div>
+
+  <div class="foo"></div>
+
+    <div class="container">
+      <div><div class="foo"></div></div>
+      <div><div class="foo"></div></div>
+    </div>
+  </div>
+
+  <div class="foo"></div>
+
+    <div class="container">
+      <div><div class="foo"></div></div>
+      <div><div class="foo"></div></div>
+    </div>
+  </div>
+
+  <div class="foo"></div>
+
+    <div class="container">
+      <div><div class="foo"></div></div>
+      <div><div class="foo"></div></div>
+    </div>
+  </div>
+
+  <div class="foo"></div>
+
+    <div class="container">
+      <div><div class="foo"></div></div>
+      <div><div class="foo"></div></div>
+    </div>
+  </div>
+
+  <div class="foo"></div>
+
+    <div class="container">
+      <div><div class="foo"></div></div>
+      <div><div class="foo"></div></div>
+    </div>
+  </div>
+
+  <script>
+    var cq = ContainerQueries.default('.foo', {
+      queries: [
+        {min: 500, identifier: 'medium'},
+        {min: 1000, identifier: 'large'},
+      ],
     });
   </script>
 </body>

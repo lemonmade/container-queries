@@ -23,6 +23,10 @@ export default class ResizeDetector {
     return (this.node == null) ? 0 : this.node.offsetWidth;
   }
 
+  get hasLoaded() {
+    return (this.object != null) && (this.object.contentDocument != null) && (this.object.contentDocument.readyState === 'complete');
+  }
+
   update() {
     let {width, _listeners} = this;
     _listeners.forEach((listener) => listener(width));
@@ -31,6 +35,7 @@ export default class ResizeDetector {
   addListener(callback) {
     this.object = this.object || createResizeObject(this);
     this._listeners.push(callback);
+    if (this.hasLoaded) { callback(this.width); }
   }
 
   removeListener(callback, {preserve = false} = {}) {
@@ -39,7 +44,7 @@ export default class ResizeDetector {
   }
 
   destroy() {
-    if (this.object) {
+    if (this.object && this.object.contentDocument) {
       this.object.contentDocument.defaultView.removeEventListener('resize', this.update);
     }
 

@@ -2,13 +2,13 @@ import Query from './Query';
 import ResizeDetector from './ResizeDetector';
 
 export class ContainerQuery {
-  constructor(node, resizeDetectorFactory = ResizeDetector.for) {
+  constructor(node, queries = [], {resizeDetectorCreator = ResizeDetector.for} = {}) {
     this.node = node;
     this.width = 0;
-    this.queries = [];
+    this.queries = queries.map((query) => new Query(query));
 
     this.update = ::this.update;
-    this.resizeDetector = resizeDetectorFactory(this.node && this.node.parentNode);
+    this.resizeDetector = resizeDetectorCreator(this.node && this.node.parentNode);
     this.resizeDetector.addListener(this.update);
   }
 
@@ -23,24 +23,34 @@ export class ContainerQuery {
     node.setAttribute('data-matching-queries', matches.join(' '));
   }
 
-  addQuery(options) {
-    let newQuery = new Query(options);
+  addQuery(query) {
+    let newQuery = new Query(query);
     this.queries.push(newQuery);
+    this.update();
     return newQuery;
+  }
+
+  addQueries(allQueries) {
+    let newQueries = allQueries.map((options) => new Query(options));
+    this.queries = this.queries.concat(newQueries);
+    this.update();
+    return newQueries;
   }
 
   destroy() {
     this.queries = [];
     delete this.node;
 
-    this.resizeDetector.removeListener(this.update);
-    delete this.resizeDetector;
+    if (this.resizeDetector != null) {
+      this.resizeDetector.removeListener(this.update);
+      delete this.resizeDetector;
+    }
   }
 }
 
 export class MultipleNodeContainerQuery {
-  constructor(nodes, resizeDetectorFactory) {
-    this.containerQueries = toArray(nodes).map((node) => new ContainerQuery(node, resizeDetectorFactory));
+  constructor(nodes, queries, options) {
+    this.containerQueries = toArray(nodes).map((node) => new ContainerQuery(node, queries, options));
   }
 
   update() {

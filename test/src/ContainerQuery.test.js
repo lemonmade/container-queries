@@ -20,16 +20,26 @@ describe('ContainerQuery', () => {
 
     resizeDetectorStubFactory = sinon.stub().returns(resizeDetectorStub);
 
-    cq = new ContainerQuery(node, resizeDetectorStubFactory);
+    cq = new ContainerQuery(node, [], {resizeDetectorCreator: resizeDetectorStubFactory});
   });
 
   afterEach(() => {
-    // cq.destroy();
+    cq.destroy();
     document.body.removeChild(node);
   });
 
   it('adds itself as a listener on the resize detector', () => {
     expect(resizeDetectorStub.addListener).to.have.been.calledWith(cq.update);
+  });
+
+  it('allows passing an initial set of queries', () => {
+    cq = new ContainerQuery(node, [{min: cutoff}], {resizeDetectorCreator: resizeDetectorStubFactory});
+
+    resizeDetectorStub.width = cutoff + 1;
+    cq.update();
+
+    expect(cq.queries.length).to.equal(1);
+    expect(node.getAttribute('data-matching-queries')).to.equal(cq.queries[0].identifier);
   });
 
   describe('#update()', () => {
@@ -65,6 +75,36 @@ describe('ContainerQuery', () => {
       let queryTwo = cq.addQuery({min: cutoff - 1});
       cq.update(cutoff + 1);
       expect(node.getAttribute('data-matching-queries')).to.equal(`${query.identifier} ${queryTwo.identifier}`);
+    });
+  });
+
+  describe('#addQuery()', () => {
+    beforeEach(() => {
+      resizeDetectorStub.width = 555;
+    });
+
+    it('immediately evaluates the new query', () => {
+      let query = cq.addQuery({test: sinon.stub().returns(true)});
+      expect(query.test).to.have.been.calledWith(resizeDetectorStub.width);
+      expect(node.getAttribute('data-matching-queries')).to.equal(query.identifier);
+    });
+  });
+
+  describe('#addQueries', () => {
+    it('adds all queries and runs them once immediately', () => {
+      let queries = cq.addQueries([
+        {test: sinon.stub().returns(true)},
+        {test: sinon.stub().returns(true)},
+      ]);
+
+      queries.forEach((query) => {
+        expect(query.test).to.have.been.calledOnce;
+        expect(query.test).to.have.been.calledWith(resizeDetectorStub.width);
+      });
+
+      expect(node.getAttribute('data-matching-queries')).to.equal(
+        queries.map((query) => query.identifier).join(' ')
+      );
     });
   });
 
@@ -107,43 +147,49 @@ describe('MultipleNodeContainerQuery', () => {
   });
 
   it('creates a ContainerQuery for each node', () => {
-    let cq = new MultipleNodeContainerQuery([nodeOne, nodeTwo], resizeDetectorStubFactory);
+    let cq = new MultipleNodeContainerQuery([nodeOne, nodeTwo], [], {resizeDetectorCreator: resizeDetectorStubFactory});
     expect(cq.containerQueries[0].node).to.deep.equal(nodeOne);
     expect(cq.containerQueries[1].node).to.deep.equal(nodeTwo);
 
-    cq = new MultipleNodeContainerQuery(document.querySelectorAll('.node'), resizeDetectorStubFactory);
+    cq = new MultipleNodeContainerQuery(document.querySelectorAll('.node'), [], {resizeDetectorCreator: resizeDetectorStubFactory});
     expect(cq.containerQueries[0].node).to.deep.equal(nodeOne);
     expect(cq.containerQueries[1].node).to.deep.equal(nodeTwo);
   });
 
   describe('#update()', () => {
-    let cqContainer = new MultipleNodeContainerQuery([nodeOne, nodeTwo], resizeDetectorStubFactory);
-    spyOnContainerQueries(cqContainer, 'update');
-    cqContainer.update();
+    it('calls the method in each container query', () => {
+      let cqContainer = new MultipleNodeContainerQuery([nodeOne, nodeTwo], [], {resizeDetectorCreator: resizeDetectorStubFactory});
+      spyOnContainerQueries(cqContainer, 'update');
+      cqContainer.update();
 
-    cqContainer.containerQueries.forEach((cq) => {
-      expect(cq.update).to.have.been.called;
+      cqContainer.containerQueries.forEach((cq) => {
+        expect(cq.update).to.have.been.called;
+      });
     });
   });
 
   describe('#addQuery()', () => {
-    let cqContainer = new MultipleNodeContainerQuery([nodeOne, nodeTwo], resizeDetectorStubFactory);
-    let addQueryArg = {min: 500};
-    spyOnContainerQueries(cqContainer, 'addQuery');
-    cqContainer.addQuery(addQueryArg);
+    it('calls the method in each container query', () => {
+      let cqContainer = new MultipleNodeContainerQuery([nodeOne, nodeTwo], [], {resizeDetectorCreator: resizeDetectorStubFactory});
+      let addQueryArg = {min: 500};
+      spyOnContainerQueries(cqContainer, 'addQuery');
+      cqContainer.addQuery(addQueryArg);
 
-    cqContainer.containerQueries.forEach((cq) => {
-      expect(cq.addQuery).to.have.been.calledWith(addQueryArg);
+      cqContainer.containerQueries.forEach((cq) => {
+        expect(cq.addQuery).to.have.been.calledWith(addQueryArg);
+      });
     });
   });
 
   describe('#destroy()', () => {
-    let cqContainer = new MultipleNodeContainerQuery([nodeOne, nodeTwo], resizeDetectorStubFactory);
-    spyOnContainerQueries(cqContainer, 'destroy');
-    cqContainer.destroy();
+    it('calls the method in each container query', () => {
+      let cqContainer = new MultipleNodeContainerQuery([nodeOne, nodeTwo], [], {resizeDetectorCreator: resizeDetectorStubFactory});
+      spyOnContainerQueries(cqContainer, 'destroy');
+      cqContainer.destroy();
 
-    cqContainer.containerQueries.forEach((cq) => {
-      expect(cq.destroy).to.have.been.called;
+      cqContainer.containerQueries.forEach((cq) => {
+        expect(cq.destroy).to.have.been.called;
+      });
     });
   });
 });

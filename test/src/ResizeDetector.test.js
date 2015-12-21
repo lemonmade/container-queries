@@ -20,6 +20,7 @@ describe('ResizeDetector', () => {
           removeEventListener: sinon.spy(),
         },
         body: {clientWidth: 0},
+        readyState: '',
       },
     };
 
@@ -111,17 +112,44 @@ describe('ResizeDetector', () => {
       expect(addEventListenerArgs[0]).to.equal('resize');
       expect(detector.update).to.have.been.calledTwice;
     });
+
+    it('does not create a listener if there is no node', () => {
+      detector = new ResizeDetector();
+      expect(() => detector.addListener(sinon.spy())).not.to.throw(Error);
+    });
   });
 
   describe('#addListener', () => {
-    it('adds a listener that is called on update', () => {
-      let listener = sinon.spy();
-      node.offsetWidth = 555;
+    let listener;
 
+    beforeEach(() => {
+      listener = sinon.spy();
+      node.offsetWidth = 555;
+    });
+
+    it('adds a listener that is called on update', () => {
       detector.addListener(listener);
       detector.update();
 
       expect(listener).to.have.been.calledWith(node.offsetWidth);
+    });
+
+    it('calls the listener immediately if the object has loaded', () => {
+      objectStub.contentDocument.readyState = 'complete';
+      detector.addListener(listener);
+      expect(listener).to.have.been.calledWith(node.offsetWidth);
+    });
+
+    it('does not call the listener immediately if the object has not loaded', () => {
+      objectStub.contentDocument = null;
+      detector.addListener(listener);
+      expect(listener).not.to.have.been.calledWith(node.offsetWidth);
+    });
+
+    it('does not call the listener immediately if the object is not ready', () => {
+      objectStub.contentDocument.readyState = '';
+      detector.addListener(listener);
+      expect(listener).not.to.have.been.calledWith(node.offsetWidth);
     });
   });
 
@@ -188,7 +216,7 @@ describe('ResizeDetector', () => {
     });
 
     it('does not choke when no object has been created', () => {
-      expect(() => ResizeDetector.for().destroy()).not.to.throwError;
+      expect(() => ResizeDetector.for().destroy()).not.to.throw(Error);
     });
 
     it('removes all listeners', () => {
