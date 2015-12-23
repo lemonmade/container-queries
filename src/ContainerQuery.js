@@ -1,11 +1,11 @@
 import Query from './Query';
 import ResizeDetector from './ResizeDetector';
 
-export class ContainerQuery {
+export default class ContainerQuery {
   constructor(node, queries = [], {resizeDetectorCreator = ResizeDetector.for} = {}) {
     this.node = node;
     this.width = 0;
-    this.queries = queries.map((query) => new Query(query));
+    this.queries = queries.concat(queriesFromNode(node)).map((query) => new Query(query));
 
     this.update = ::this.update;
     this.resizeDetector = resizeDetectorCreator(this.node && this.node.parentNode);
@@ -48,24 +48,24 @@ export class ContainerQuery {
   }
 }
 
-export class MultipleNodeContainerQuery {
-  constructor(nodes, queries, options) {
-    this.containerQueries = toArray(nodes).map((node) => new ContainerQuery(node, queries, options));
-  }
+const dataAttributeRegex = /data-container-query-/;
 
-  update() {
-    this.containerQueries.forEach((cq) => cq.update());
-  }
-
-  addQuery(options) {
-    this.containerQueries.forEach((cq) => cq.addQuery(options));
-  }
-
-  destroy() {
-    this.containerQueries.forEach((cq) => cq.destroy());
-  }
+function queriesFromNode(node) {
+  return Array.prototype.slice.call(node.attributes)
+    .filter((attr) => dataAttributeRegex.test(attr.name))
+    .map((attr) => {
+      let identifier = attr.name.replace(dataAttributeRegex, '');
+      let value = node.getAttribute(attr.name);
+      return {identifier, ...parseContainerQueryValue(value)};
+    });
 }
 
-function toArray(arrayLike) {
-  return Array.prototype.slice.apply(arrayLike);
+function parseContainerQueryValue(value) {
+  let parsed = parseInt(value.match(/\d+/), 10);
+
+  if (/^</.test(value)) {
+    return {max: parsed};
+  } else {
+    return {min: parsed};
+  }
 }

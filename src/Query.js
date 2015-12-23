@@ -1,13 +1,15 @@
 export default class Query {
-  constructor({min, max, test, identifier} = {}) {
-    this.identifier = identifier || identifierForMinMax(min, max);
+  constructor({test, identifier, min, max, inclusive} = {}) {
+    let inclusivity = determineInclusivity(inclusive);
+    let {min: adjustedMin, max: adjustedMax} = adjustedMinMax(min, max, inclusivity);
+    this.identifier = identifier || identifierForMinMax(min, max, inclusivity);
     this.matches = false;
     this._listeners = [];
 
     if (test != null) {
       this.test = test;
     } else {
-      this.test = createConditionFromMinMax(min, max);
+      this.test = createConditionFromMinMax(adjustedMin, adjustedMax);
     }
   }
 
@@ -27,18 +29,36 @@ export default class Query {
   }
 }
 
+function determineInclusivity(inclusive = true) {
+  let min = (inclusive === true) || (inclusive === 'min');
+  let max = (inclusive === true) || (inclusive === 'max');
+
+  return {min, max, both: (min && max), neither: (!min && !max)};
+}
+
 let queryIndex = 1;
 
-function identifierForMinMax(min, max) {
+function identifierForMinMax(min, max, inclusivity) {
   if (min != null && max != null) {
-    return `${min}-${max}`;
+    return `${min}${interiorForMinMaxInclusivity(inclusivity)}${max}`;
   } else if (min != null) {
-    return `>=${min}`;
+    return `${inclusivity.min ? '>=' : '>'}${min}`;
   } else if (max != null) {
-    return `<=${max}`;
+    return `${inclusivity.max ? '<=' : '<'}${max}`;
   } else {
     return `ContainerQuery${queryIndex++}`;
   }
+}
+
+function interiorForMinMaxInclusivity(inclusivity) {
+  return `${inclusivity.min ? '.' : '>'}${inclusivity.neither ? '..' : '.'}${inclusivity.max ? '.' : '<'}`;
+}
+
+function adjustedMinMax(min, max, inclusivity) {
+  return {
+    min: (inclusivity.min || min == null) ? min : min + 1,
+    max: (inclusivity.max || max == null) ? max : max - 1,
+  };
 }
 
 function createConditionFromMinMax(min = 0, max = 100000) {

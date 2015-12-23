@@ -1,25 +1,29 @@
 $CONTAINER_QUERY_ATTRIBUTE: unquote('data-matching-queries') !default;
 
-@function container-query-strip-units($number) {
+@function _container-query-strip-units($number) {
   @return $number / ($number * 0 + 1);
 }
 
-@mixin container-query($identifier: null, $min: null, $max: null) {
+@function _container-query-adjusted-length($length, $inclusive) {
+  @return _container-query-strip-units($length);
+}
+
+@mixin container-query($identifier: null, $min: null, $max: null, $inclusive: true) {
   @if $min != null and $max != null {
-    $min: container-query-strip-units($min);
-    $max: container-query-strip-units($max);
+    $min: _container-query-adjusted-length($min);
+    $max: _container-query-adjusted-length($max);
     &[#{$CONTAINER_QUERY_ATTRIBUTE}~="#{$min}-#{$max}"] { @content; }
   } @else if $min != null {
-    $min: container-query-strip-units($min);
+    $min: _container-query-adjusted-length($min);
     &[#{$CONTAINER_QUERY_ATTRIBUTE}~=">=#{$min}"] { @content; }
   } @else if $max != null {
-    $max: container-query-strip-units($max);
+    $max: _container-query-adjusted-length($max);
     &[#{$CONTAINER_QUERY_ATTRIBUTE}~="<=#{$max}"] { @content; }
   } @else if $identifier != null {
     &[#{$CONTAINER_QUERY_ATTRIBUTE}~="#{$identifier}"] { @content; }
   }
 }
 
-@mixin cq($identifier: null, $min: null, $max: null) {
-  @include container-query($identifier, $min, $max) { @content; }
+@mixin cq($identifier: null, $min: null, $max: null, $inclusive: true) {
+  @include container-query($identifier, $min, $max, $inclusive) { @content; }
 }

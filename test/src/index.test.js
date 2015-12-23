@@ -1,7 +1,8 @@
 import '../helper';
 
 import containerQuery from '../../src';
-import {ContainerQuery, MultipleNodeContainerQuery} from '../../src/ContainerQuery';
+import ContainerQuery from '../../src/ContainerQuery';
+import MultipleNodeContainerQuery from '../../src/MultipleNodeContainerQuery';
 
 describe('containerQuery', () => {
   let nodeOne;
