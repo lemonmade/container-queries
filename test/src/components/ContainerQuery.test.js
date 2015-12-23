@@ -50,130 +50,153 @@ describe('ContainerQuery', () => {
       const name = 'myQuery_strange-name_33';
 
       function setNodeDataAttribute(value) {
-        node.setAttribute(`data-container-queries`, `${name}: ${value}`);
+        node.setAttribute(`data-container-queries`, /:/.test(value) ? value : `${name}: ${value}`);
         cq = new ContainerQuery(node, [], {resizeDetectorCreator: resizeDetectorStubFactory});
       }
 
-      function testWidthsAroundCutoff({min = false, max = false, inclusive = true}) {
+      function setWidthAndUpdate(width) {
+        resizeDetectorStub.width = width;
+        cq.update();
+      }
+
+      function testWidthsAroundCutoffs({min = false, max = false, inclusive = true}) {
         let inclusivity = new Inclusivity(inclusive);
 
         if (min) {
-          resizeDetectorStub.width = minCutoff - 1;
-          cq.update();
+          setWidthAndUpdate(minCutoff - 1);
           expect(node.getAttribute('data-matching-queries')).to.equal('');
 
-          resizeDetectorStub.width = minCutoff;
-          cq.update();
+          setWidthAndUpdate(minCutoff);
           expect(node.getAttribute('data-matching-queries')).to.equal(inclusivity.min ? name : '');
 
-          resizeDetectorStub.width = minCutoff + 1;
-          cq.update();
+          setWidthAndUpdate(minCutoff + 1);
           expect(node.getAttribute('data-matching-queries')).to.equal(name);
         }
 
         if (max) {
-          resizeDetectorStub.width = maxCutoff - 1;
-          cq.update();
+          setWidthAndUpdate(maxCutoff - 1);
           expect(node.getAttribute('data-matching-queries')).to.equal(name);
 
-          resizeDetectorStub.width = maxCutoff;
-          cq.update();
+          setWidthAndUpdate(maxCutoff);
           expect(node.getAttribute('data-matching-queries')).to.equal(inclusivity.max ? name : '');
 
-          resizeDetectorStub.width = maxCutoff + 1;
-          cq.update();
+          setWidthAndUpdate(maxCutoff + 1);
           expect(node.getAttribute('data-matching-queries')).to.equal('');
         }
       }
 
       it('attaches named data queries with a "X" as an inclusive minimum width', () => {
         setNodeDataAttribute(minCutoff);
-        testWidthsAroundCutoff({min: true, inclusive: true});
+        testWidthsAroundCutoffs({min: true, inclusive: true});
       });
 
       it('attaches named data queries with a "Xpx" as an inclusive minimum width', () => {
         setNodeDataAttribute(`${minCutoff}px`);
-        testWidthsAroundCutoff({min: true, inclusive: true});
+        testWidthsAroundCutoffs({min: true, inclusive: true});
       });
 
       it('attaches named data queries with a ">=X" as an inclusive minimum width', () => {
         setNodeDataAttribute(`>=${minCutoff}`);
-        testWidthsAroundCutoff({min: true, inclusive: true});
+        testWidthsAroundCutoffs({min: true, inclusive: true});
       });
 
       it('attaches named data queries with a ">=Xpx" as an inclusive minimum width', () => {
         setNodeDataAttribute(`>=${minCutoff}px`);
-        testWidthsAroundCutoff({min: true, inclusive: true});
+        testWidthsAroundCutoffs({min: true, inclusive: true});
       });
 
       it('attaches named data queries with a ">X" as an exclusive minimum width', () => {
         setNodeDataAttribute(`>${minCutoff}`);
-        testWidthsAroundCutoff({min: true, inclusive: false});
+        testWidthsAroundCutoffs({min: true, inclusive: false});
       });
 
       it('attaches named data queries with a ">Xpx" as an exclusive minimum width', () => {
         setNodeDataAttribute(`>${minCutoff}px`);
-        testWidthsAroundCutoff({min: true, inclusive: false});
+        testWidthsAroundCutoffs({min: true, inclusive: false});
       });
 
       it('attaches named data queries with a "<=X" as an inclusive maximum width', () => {
         setNodeDataAttribute(`<=${maxCutoff}`);
-        testWidthsAroundCutoff({max: true, inclusive: true});
+        testWidthsAroundCutoffs({max: true, inclusive: true});
       });
 
       it('attaches named data queries with a "<=Xpx" as an inclusive maximum width', () => {
         setNodeDataAttribute(`<=${maxCutoff}px`);
-        testWidthsAroundCutoff({max: true, inclusive: true});
+        testWidthsAroundCutoffs({max: true, inclusive: true});
       });
 
       it('attaches named data queries with a "<X" as an exclusive maximum width', () => {
         setNodeDataAttribute(`<${maxCutoff}`);
-        testWidthsAroundCutoff({max: true, inclusive: false});
+        testWidthsAroundCutoffs({max: true, inclusive: false});
       });
 
       it('attaches named data queries with a "<Xpx" as an exclusive maximum width', () => {
         setNodeDataAttribute(`<${maxCutoff}px`);
-        testWidthsAroundCutoff({max: true, inclusive: false});
+        testWidthsAroundCutoffs({max: true, inclusive: false});
       });
 
       it('attaches named data queries with a "X...Y" as an inclusive minimum and maximum width', () => {
         setNodeDataAttribute(`${minCutoff}...${maxCutoff}`);
-        testWidthsAroundCutoff({min: true, max: true, inclusive: true});
+        testWidthsAroundCutoffs({min: true, max: true, inclusive: true});
       });
 
       it('attaches named data queries with a "Xpx...Ypx" as an inclusive minimum and maximum width', () => {
         setNodeDataAttribute(`${minCutoff}px...${maxCutoff}px`);
-        testWidthsAroundCutoff({min: true, max: true, inclusive: true});
+        testWidthsAroundCutoffs({min: true, max: true, inclusive: true});
       });
 
       it('attaches named data queries with a "X>..Y" as an exclusive minimum and inclusive maximum width', () => {
         setNodeDataAttribute(`${minCutoff}>..${maxCutoff}`);
-        testWidthsAroundCutoff({min: true, max: true, inclusive: 'max'});
+        testWidthsAroundCutoffs({min: true, max: true, inclusive: 'max'});
       });
 
       it('attaches named data queries with a "Xpx>..Ypx" as an exclusive minimum and inclusive maximum width', () => {
         setNodeDataAttribute(`${minCutoff}px>..${maxCutoff}px`);
-        testWidthsAroundCutoff({min: true, max: true, inclusive: 'max'});
+        testWidthsAroundCutoffs({min: true, max: true, inclusive: 'max'});
       });
 
       it('attaches named data queries with a "X...<Y" as an inclusive minimum and exclusive maximum width', () => {
         setNodeDataAttribute(`${minCutoff}..<${maxCutoff}`);
-        testWidthsAroundCutoff({min: true, max: true, inclusive: 'min'});
+        testWidthsAroundCutoffs({min: true, max: true, inclusive: 'min'});
       });
 
       it('attaches named data queries with a "Xpx..<Ypx" as an inclusive minimum and exclusive maximum width', () => {
         setNodeDataAttribute(`${minCutoff}px..<${maxCutoff}px`);
-        testWidthsAroundCutoff({min: true, max: true, inclusive: 'min'});
+        testWidthsAroundCutoffs({min: true, max: true, inclusive: 'min'});
       });
 
       it('attaches named data queries with a "X>..<Y" as an exclusive minimum and maximum width', () => {
         setNodeDataAttribute(`${minCutoff}>..<${maxCutoff}`);
-        testWidthsAroundCutoff({min: true, max: true, inclusive: false});
+        testWidthsAroundCutoffs({min: true, max: true, inclusive: false});
       });
 
       it('attaches named data queries with a "Xpx>..<Ypx" as an exclusive minimum and maximum width', () => {
         setNodeDataAttribute(`${minCutoff}px>..<${maxCutoff}px`);
-        testWidthsAroundCutoff({min: true, max: true, inclusive: false});
+        testWidthsAroundCutoffs({min: true, max: true, inclusive: false});
+      });
+
+      it('attaches multiple, comma-separated named data queries', () => {
+        let large = 'largeDown';
+        let small = 'smallUp';
+        setNodeDataAttribute(`${small}: >${minCutoff}, ${large}: <=${maxCutoff}`);
+
+        setWidthAndUpdate(minCutoff - 1);
+        expect(node.getAttribute('data-matching-queries')).to.equal(large);
+
+        setWidthAndUpdate(minCutoff);
+        expect(node.getAttribute('data-matching-queries')).to.equal(large);
+
+        setWidthAndUpdate(minCutoff + 1);
+        expect(node.getAttribute('data-matching-queries')).to.equal(`${small} ${large}`);
+
+        setWidthAndUpdate(maxCutoff - 1);
+        expect(node.getAttribute('data-matching-queries')).to.equal(`${small} ${large}`);
+
+        setWidthAndUpdate(maxCutoff);
+        expect(node.getAttribute('data-matching-queries')).to.equal(`${small} ${large}`);
+
+        setWidthAndUpdate(maxCutoff + 1);
+        expect(node.getAttribute('data-matching-queries')).to.equal(small);
       });
     });
   });
