@@ -20,7 +20,7 @@ export default class ContainerQuery {
       return query.matches;
     }).map((query) => query.identifier);
 
-    node.setAttribute('data-matching-queries', matches.join(' '));
+    node.setAttribute('data-container-query-matches', matches.join(' '));
   }
 
   addQuery(query) {

@@ -9,7 +9,7 @@ export class Inclusivity {
   get value() { return this.both ? true : ((this.min && 'min') || (this.max && 'max') || false); }
 }
 
-export function identifierForMinMax(min, max, {withInclusivity: inclusivity}) {
+export function identifierForMinMax(min, max, {withInclusivity: inclusivity} = {}) {
   if (min != null && max != null) {
     return `${min}${interiorForInclusivity(inclusivity)}${max}`;
   } else if (min != null) {
@@ -41,6 +41,9 @@ export function minMaxInclusiveFromIdentifier(identifier) {
       return '';
     });
 
+  if (result.max == null) { inclusivity.max = inclusivity.min; }
+  if (result.min == null) { inclusivity.min = inclusivity.max; }
+
   result.inclusive = inclusivity.value;
 
   return result;
@@ -51,8 +54,8 @@ function interiorForInclusivity(inclusivity) {
 }
 
 export function effectiveMinMax(min, max, {withInclusivity: inclusivity}) {
-  return {
-    min: (inclusivity.min || min == null) ? min : min + 1,
-    max: (inclusivity.max || max == null) ? max : max - 1,
-  };
+  let result = {};
+  if (min != null) { result.min = inclusivity.min ? min : min + 1; }
+  if (max != null) { result.max = inclusivity.max ? max : max - 1; }
+  return result;
 }

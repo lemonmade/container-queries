@@ -20,7 +20,7 @@
 
     .foo:after {
       font-family: sans-serif;
-      content: attr(data-matching-queries);
+      content: attr(data-container-query-matches);
       display: block;
       color: white;
       position: absolute;
@@ -29,11 +29,11 @@
       transform: translate(-50%, -50%);
     }
 
-    .foo[data-matching-queries~="medium"] {
+    .foo[data-container-query-matches~="medium"] {
       background: blue;
     }
 
-    .foo[data-matching-queries~="large"] {
+    .foo[data-container-query-matches~="large"] {
       background: red;
     }
   </style>

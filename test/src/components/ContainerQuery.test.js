@@ -41,7 +41,7 @@ describe('ContainerQuery', () => {
       cq.update();
 
       expect(cq.queries.length).to.equal(1);
-      expect(node.getAttribute('data-matching-queries')).to.equal(cq.queries[0].identifier);
+      expect(node.getAttribute('data-container-query-matches')).to.equal(cq.queries[0].identifier);
     });
 
     describe('data queries', () => {
@@ -64,24 +64,24 @@ describe('ContainerQuery', () => {
 
         if (min) {
           setWidthAndUpdate(minCutoff - 1);
-          expect(node.getAttribute('data-matching-queries')).to.equal('');
+          expect(node.getAttribute('data-container-query-matches')).to.equal('');
 
           setWidthAndUpdate(minCutoff);
-          expect(node.getAttribute('data-matching-queries')).to.equal(inclusivity.min ? name : '');
+          expect(node.getAttribute('data-container-query-matches')).to.equal(inclusivity.min ? name : '');
 
           setWidthAndUpdate(minCutoff + 1);
-          expect(node.getAttribute('data-matching-queries')).to.equal(name);
+          expect(node.getAttribute('data-container-query-matches')).to.equal(name);
         }
 
         if (max) {
           setWidthAndUpdate(maxCutoff - 1);
-          expect(node.getAttribute('data-matching-queries')).to.equal(name);
+          expect(node.getAttribute('data-container-query-matches')).to.equal(name);
 
           setWidthAndUpdate(maxCutoff);
-          expect(node.getAttribute('data-matching-queries')).to.equal(inclusivity.max ? name : '');
+          expect(node.getAttribute('data-container-query-matches')).to.equal(inclusivity.max ? name : '');
 
           setWidthAndUpdate(maxCutoff + 1);
-          expect(node.getAttribute('data-matching-queries')).to.equal('');
+          expect(node.getAttribute('data-container-query-matches')).to.equal('');
         }
       }
 
@@ -181,22 +181,22 @@ describe('ContainerQuery', () => {
         setNodeDataAttribute(`${small}: >${minCutoff}, ${large}: <=${maxCutoff}`);
 
         setWidthAndUpdate(minCutoff - 1);
-        expect(node.getAttribute('data-matching-queries')).to.equal(large);
+        expect(node.getAttribute('data-container-query-matches')).to.equal(large);
 
         setWidthAndUpdate(minCutoff);
-        expect(node.getAttribute('data-matching-queries')).to.equal(large);
+        expect(node.getAttribute('data-container-query-matches')).to.equal(large);
 
         setWidthAndUpdate(minCutoff + 1);
-        expect(node.getAttribute('data-matching-queries')).to.equal(`${small} ${large}`);
+        expect(node.getAttribute('data-container-query-matches')).to.equal(`${small} ${large}`);
 
         setWidthAndUpdate(maxCutoff - 1);
-        expect(node.getAttribute('data-matching-queries')).to.equal(`${small} ${large}`);
+        expect(node.getAttribute('data-container-query-matches')).to.equal(`${small} ${large}`);
 
         setWidthAndUpdate(maxCutoff);
-        expect(node.getAttribute('data-matching-queries')).to.equal(`${small} ${large}`);
+        expect(node.getAttribute('data-container-query-matches')).to.equal(`${small} ${large}`);
 
         setWidthAndUpdate(maxCutoff + 1);
-        expect(node.getAttribute('data-matching-queries')).to.equal(small);
+        expect(node.getAttribute('data-container-query-matches')).to.equal(small);
       });
     });
   });
@@ -211,29 +211,29 @@ describe('ContainerQuery', () => {
     it('uses the resize detector width if none is provided', () => {
       resizeDetectorStub.width = cutoff + 1;
       cq.update();
-      expect(node.getAttribute('data-matching-queries')).to.equal(query.identifier);
+      expect(node.getAttribute('data-container-query-matches')).to.equal(query.identifier);
     });
 
     it('adds an attribute with matching queries', () => {
       cq.update(cutoff + 1);
-      expect(node.getAttribute('data-matching-queries')).to.equal(query.identifier);
+      expect(node.getAttribute('data-container-query-matches')).to.equal(query.identifier);
     });
 
     it('does not add an attribute for non-matching queries', () => {
       cq.update(cutoff - 1);
-      expect(node.getAttribute('data-matching-queries')).to.be.empty;
+      expect(node.getAttribute('data-container-query-matches')).to.be.empty;
     });
 
     it('removes the attribute for a formerly matching query', () => {
       cq.update(cutoff + 1);
       cq.update(cutoff - 1);
-      expect(node.getAttribute('data-matching-queries')).to.be.empty;
+      expect(node.getAttribute('data-container-query-matches')).to.be.empty;
     });
 
     it('includes multiple matching queries as a space-separated list', () => {
       let queryTwo = cq.addQuery({min: cutoff - 1});
       cq.update(cutoff + 1);
-      expect(node.getAttribute('data-matching-queries')).to.equal(`${query.identifier} ${queryTwo.identifier}`);
+      expect(node.getAttribute('data-container-query-matches')).to.equal(`${query.identifier} ${queryTwo.identifier}`);
     });
   });
 
@@ -245,7 +245,7 @@ describe('ContainerQuery', () => {
     it('immediately evaluates the new query', () => {
       let query = cq.addQuery({test: sinon.stub().returns(true)});
       expect(query.test).to.have.been.calledWith(resizeDetectorStub.width);
-      expect(node.getAttribute('data-matching-queries')).to.equal(query.identifier);
+      expect(node.getAttribute('data-container-query-matches')).to.equal(query.identifier);
     });
   });
 
@@ -261,7 +261,7 @@ describe('ContainerQuery', () => {
         expect(query.test).to.have.been.calledWith(resizeDetectorStub.width);
       });
 
-      expect(node.getAttribute('data-matching-queries')).to.equal(
+      expect(node.getAttribute('data-container-query-matches')).to.equal(
         queries.map((query) => query.identifier).join(' ')
       );
     });

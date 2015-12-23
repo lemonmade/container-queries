@@ -1,4 +1,4 @@
-$CONTAINER_QUERY_ATTRIBUTE: unquote('data-matching-queries') !default;
+$CONTAINER_QUERY_ATTRIBUTE: unquote('data-container-query-matches') !default;
 
 @function _container-query-strip-units($number) {
   @return $number / ($number * 0 + 1);
