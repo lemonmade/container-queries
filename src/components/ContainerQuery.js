@@ -1,10 +1,10 @@
 import Query from './Query';
 import ResizeDetector from './ResizeDetector';
+import {minMaxInclusiveFromIdentifier} from '../range';
 
 export default class ContainerQuery {
   constructor(node, queries = [], {resizeDetectorCreator = ResizeDetector.for} = {}) {
     this.node = node;
-    this.width = 0;
     this.queries = queries.concat(queriesFromNode(node)).map((query) => new Query(query));
 
     this.update = ::this.update;
@@ -48,24 +48,23 @@ export default class ContainerQuery {
   }
 }
 
-const dataAttributeRegex = /data-container-query-/;
+const queryExtractor = /([^:,\s]+):\s+([^,\s]+)/g;
 
 function queriesFromNode(node) {
-  return Array.prototype.slice.call(node.attributes)
-    .filter((attr) => dataAttributeRegex.test(attr.name))
-    .map((attr) => {
-      let identifier = attr.name.replace(dataAttributeRegex, '');
-      let value = node.getAttribute(attr.name);
-      return {identifier, ...parseContainerQueryValue(value)};
+  let attribute = node.getAttribute('data-container-queries');
+  if (!attribute) { return []; }
+
+  let queries = [];
+  let match = queryExtractor.exec(attribute);
+
+  while (match) {
+    queries.push({
+      identifier: match[1].trim(),
+      ...minMaxInclusiveFromIdentifier(match[2].trim()),
     });
-}
 
-function parseContainerQueryValue(value) {
-  let parsed = parseInt(value.match(/\d+/), 10);
-
-  if (/^</.test(value)) {
-    return {max: parsed};
-  } else {
-    return {min: parsed};
+    match = queryExtractor.exec(attribute);
   }
+
+  return queries;
 }

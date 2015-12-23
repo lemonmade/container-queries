@@ -121,12 +121,10 @@
   </div>
 
   <script>
-    var cq = ContainerQueries.default('.foo', {
-      queries: [
-        {min: 500, identifier: 'medium'},
-        {min: 1000, identifier: 'large'},
-      ],
-    });
+    var cq = ContainerQueries.default('.foo', [
+      {min: 500, identifier: 'medium'},
+      {min: 1000, identifier: 'large'},
+    ]);
   </script>
 </body>
 </html>

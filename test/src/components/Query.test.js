@@ -1,6 +1,6 @@
-import '../helper';
+import '../../helper';
 
-import Query from '../../src/Query';
+import Query from '../../../src/components/Query';
 
 describe('Query', () => {
   describe('#identifier', () => {

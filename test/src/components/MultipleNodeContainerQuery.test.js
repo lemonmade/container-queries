@@ -1,6 +1,6 @@
-import '../helper';
+import '../../helper';
 
-import MultipleNodeContainerQuery from '../../src/MultipleNodeContainerQuery';
+import MultipleNodeContainerQuery from '../../../src/components/MultipleNodeContainerQuery';
 
 describe('MultipleNodeContainerQuery', () => {
   let nodeOne;

@@ -1,6 +1,6 @@
-import '../helper';
+import '../../helper';
 
-import ResizeDetector from '../../src/ResizeDetector';
+import ResizeDetector from '../../../src/components/ResizeDetector';
 
 describe('ResizeDetector', () => {
   let objectStub;
