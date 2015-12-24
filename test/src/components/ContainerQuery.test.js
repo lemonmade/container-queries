@@ -1,32 +1,35 @@
 import '../../helper';
 
 import ContainerQuery from '../../../src/components/ContainerQuery';
+import ResizeDetector from '../../../src/components/ResizeDetector';
 import {Inclusivity} from '../../../src/range';
 
 describe('ContainerQuery', () => {
   const cutoff = 500;
   let node;
+  let nodeTwo;
   let cq;
   let resizeDetectorStub;
-  let resizeDetectorStubFactory;
 
   beforeEach(() => {
     node = document.createElement('div');
-    document.body.appendChild(node);
+    node.className = 'TEST_NODE';
+    nodeTwo = node.cloneNode(true);
+    [node, nodeTwo].forEach((aNode) => document.body.appendChild(aNode));
 
     resizeDetectorStub = {
       addListener: sinon.spy(),
       removeListener: sinon.spy(),
     };
 
-    resizeDetectorStubFactory = sinon.stub().returns(resizeDetectorStub);
-
-    cq = new ContainerQuery(node, [], {resizeDetectorCreator: resizeDetectorStubFactory});
+    sinon.stub(ResizeDetector, 'create').returns(resizeDetectorStub);
+    cq = new ContainerQuery(node);
   });
 
   afterEach(() => {
     cq.destroy();
-    document.body.removeChild(node);
+    ResizeDetector.create.restore();
+    [node, nodeTwo].forEach((aNode) => document.body.removeChild(aNode));
   });
 
   describe('#constructor()', () => {
@@ -35,7 +38,8 @@ describe('ContainerQuery', () => {
     });
 
     it('allows passing an initial set of queries', () => {
-      cq = new ContainerQuery(node, [{min: cutoff}], {resizeDetectorCreator: resizeDetectorStubFactory});
+      cq.destroy();
+      cq = new ContainerQuery(node, [{min: cutoff}]);
 
       resizeDetectorStub.width = cutoff + 1;
       cq.update();
@@ -51,7 +55,8 @@ describe('ContainerQuery', () => {
 
       function setNodeDataAttribute(value) {
         node.setAttribute(`data-container-queries`, /:/.test(value) ? value : `${name}: ${value}`);
-        cq = new ContainerQuery(node, [], {resizeDetectorCreator: resizeDetectorStubFactory});
+        cq.destroy();
+        cq = new ContainerQuery(node);
       }
 
       function setWidthAndUpdate(width) {

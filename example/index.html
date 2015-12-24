@@ -36,11 +36,15 @@
     .foo[data-container-query-matches~="large"] {
       background: red;
     }
+
+    .foo[data-container-query-matches~="special"] {
+      background: purple;
+    }
   </style>
 </head>
 <body>
   <div>
-    <div class="foo"></div>
+    <div class="foo" data-container-queries="special: 0"></div>
 
     <div class="container">
       <div><div class="foo"></div></div>
@@ -52,7 +56,7 @@
 
     <div class="container">
       <div><div class="foo"></div></div>
-      <div><div class="foo"></div></div>
+      <div><div class="foo" data-container-queries="special: 0"></div></div>
     </div>
   </div>
 
@@ -121,7 +125,7 @@
   </div>
 
   <script>
-    var cq = ContainerQueries.default('.foo', [
+    var cq = ContainerQueries.default.create('.foo', [
       {min: 500, identifier: 'medium'},
       {min: 1000, identifier: 'large'},
     ]);

@@ -18,3 +18,11 @@ global.window = document.defaultView;
 global.navigator = global.window.navigator;
 
 global.print = ::console.log; // eslint-disable-line no-console
+
+// Global upkeep
+
+import DOMCache from '../src/components/DOMCache';
+
+beforeEach(() => {
+  DOMCache.clear();
+});

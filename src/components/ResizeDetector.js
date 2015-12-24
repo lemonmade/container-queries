@@ -1,20 +1,8 @@
-let detectors = new WeakMap();
+import UIComponent from './UIComponent';
 
-export default class ResizeDetector {
-  static for(node) {
-    let detector = (node == null) ? null : detectors.get(node);
-
-    if (detector != null) {
-      return detector;
-    }
-
-    detector = new ResizeDetector(node);
-    if (node != null) { detectors.set(node, detector); }
-    return detector;
-  }
-
+export default class ResizeDetector extends UIComponent {
   constructor(node) {
-    this.node = node;
+    super(node);
     this._listeners = [];
     this.update = ::this.update;
   }
@@ -49,9 +37,7 @@ export default class ResizeDetector {
     }
 
     this._listeners = [];
-    delete this.node;
-
-    detectors.delete(this.node);
+    super.destroy();
   }
 }
 

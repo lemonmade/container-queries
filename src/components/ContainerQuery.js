@@ -1,14 +1,20 @@
 import Query from './Query';
+import UIComponent from './UIComponent';
 import ResizeDetector from './ResizeDetector';
 import {minMaxInclusiveFromIdentifier} from '../range';
 
-export default class ContainerQuery {
-  constructor(node, queries = [], {resizeDetectorCreator = ResizeDetector.for} = {}) {
-    this.node = node;
+export const containerQueryAttribute = 'data-container-queries';
+export const containerQueryMatchesAttribute = 'data-container-query-matches';
+
+export default class ContainerQuery extends UIComponent {
+  static selector = `[${containerQueryAttribute}]`;
+
+  constructor(node, queries = []) {
+    super(node);
     this.queries = queries.concat(queriesFromNode(node)).map((query) => new Query(query));
 
     this.update = ::this.update;
-    this.resizeDetector = resizeDetectorCreator(this.node && this.node.parentNode);
+    this.resizeDetector = ResizeDetector.create(this.node && this.node.parentNode);
     this.resizeDetector.addListener(this.update);
   }
 
@@ -20,7 +26,7 @@ export default class ContainerQuery {
       return query.matches;
     }).map((query) => query.identifier);
 
-    node.setAttribute('data-container-query-matches', matches.join(' '));
+    node.setAttribute(containerQueryMatchesAttribute, matches.join(' '));
   }
 
   addQuery(query) {
@@ -39,19 +45,20 @@ export default class ContainerQuery {
 
   destroy() {
     this.queries = [];
-    delete this.node;
 
     if (this.resizeDetector != null) {
       this.resizeDetector.removeListener(this.update);
       delete this.resizeDetector;
     }
+
+    super.destroy();
   }
 }
 
 const queryExtractor = /([^:,\s]+):\s+([^,\s]+)/g;
 
 function queriesFromNode(node) {
-  let attribute = node.getAttribute('data-container-queries');
+  let attribute = node.getAttribute(containerQueryAttribute);
   if (!attribute) { return []; }
 
   let queries = [];

@@ -27,7 +27,7 @@ describe('ResizeDetector', () => {
     sinon.stub(document, 'createElement').returns(objectStub);
     sinon.stub(window.Node.prototype, 'appendChild');
 
-    detector = ResizeDetector.for(node);
+    detector = new ResizeDetector(node);
   });
 
   afterEach(() => {
@@ -50,7 +50,7 @@ describe('ResizeDetector', () => {
     });
 
     it('does not append an object if the node does not exist', () => {
-      detector = ResizeDetector.for();
+      detector = new ResizeDetector();
       expect(document.createElement).not.to.have.been.called;
     });
 
@@ -189,7 +189,7 @@ describe('ResizeDetector', () => {
 
   describe('#width', () => {
     it('has a 0 width when there is no node', () => {
-      detector = ResizeDetector.for();
+      detector = new ResizeDetector();
       expect(detector.width).to.equal(0);
     });
 
@@ -216,7 +216,7 @@ describe('ResizeDetector', () => {
     });
 
     it('does not choke when no object has been created', () => {
-      expect(() => ResizeDetector.for().destroy()).not.to.throw(Error);
+      expect(() => new ResizeDetector().destroy()).not.to.throw(Error);
     });
 
     it('removes all listeners', () => {
