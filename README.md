@@ -29,12 +29,12 @@ Finally, add your container query conditions using the `addQuery` method of the 
 In addition, ensure that you pass an `identifier`; this is the value that must be used in your stylesheets to respond to the query. You can also provide a `test` method instead of a min/ max, which must take the current width and return a boolean indicating whether the query should match given that width.
 
 ```js
-containerQuery.addQuery({min: 320}, identifier: 'phone-up');
-containerQuery.addQuery({min: 1000, max: 2000}, inclusive: 'min', identifier: 'big');
+containerQuery.addQuery({min: 320, identifier: 'phone-up'});
+containerQuery.addQuery({min: 1000, max: 2000, inclusive: 'min', identifier: 'big'});
 containerQuery.addQuery({
-  test(width) { return (width % 2) === 0 },
+  test: function(width) { return (width % 2) === 0 },
   identifier: 'even',
-})
+});
 ```
 
 These queries will automatically be updated as the parent of the node changes size.
