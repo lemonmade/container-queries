@@ -11,6 +11,8 @@ A set of utilities for creating simple, width-based container queries.
 
 ## Usage
 
+### JavaScript
+
 First, import the `ContainerQuery` object from this package:
 
 ```js
@@ -39,7 +41,39 @@ containerQuery.addQuery({
 
 These queries will automatically be updated as the parent of the node changes size.
 
-Finally, in your CSS file, add a selector that will inform you of when a given query matches. This plugin uses the `data-container-query-matches` attribute to provide this information by populating it with a space-separated list of matching queries.
+### HTML
+
+As an alternative (or, in addition to) adding queries in JavaScript, you can embed them directly in your HTML. To do so, simply populate the `data-container-queries` attribute with a string representation of your queries. When doing a `min` query, use the `>` (or `>=`, for inclusivity) operator followed by the unit you wish to use. `max` queries can similarly be done using `<` and `<=` operators. A query with both a `min` and `max` uses both numbers, separated by ellipses, optionally with `>` and/ or `<` to specify exclusivity of the range (see example below).
+
+```html
+<div data-container-queries=">300"></div> <!-- greater than 300px, exclusive -->
+<div data-container-queries="<=700"></div> <!-- less than 700px, inclusive -->
+<div data-container-queries="300...700"></div> <!-- from 300px to 700px, inclusive on both sides -->
+<div data-container-queries="300>..700"></div> <!-- from 300px to 700px, exclusive of 300px but inclusive of 700px -->
+<div data-container-queries="300..<700"></div> <!-- from 300px to 700px, inclusive of 300px but exclusive of 700px -->
+<div data-container-queries="300>..<700"></div> <!-- from 300px to 700px, exclusive on both sides -->
+```
+
+Note that you will still have to run some JavaScript for the script to detect and install these queries. You can do so using the static `createAllWithin` method of the imported `ContainerQuery` object, passing it the root of your document:
+
+```javascript
+import ContainerQuery from 'container-queries';
+ContainerQuery.createAllWithin(document);
+```
+
+You must call this again whenever you are inserting new nodes into the DOM. You can cleanup after nodes are removed using the static `destroyAllWithin` method:
+
+```javascript
+import ContainerQuery from 'container-queries';
+
+let nodeToRemove = document.getElementById('RemoveMe');
+nodeToRemove.parentNode.removeChild(nodeToRemove);
+ContainerQuery.destroyAllWithin(nodeToRemove);
+```
+
+### CSS
+
+The CSS for updating styles according to container queries is the same regardless of whether the query was added in JavaScript or HTML. This plugin uses the `data-container-query-matches` attribute to provide this information by populating it with a space-separated list of matching queries. You can therefore write any attribute selector using this data attribute to update your styles:
 
 ```css
 .my-component[data-container-query-matches="phone-up"] {} /* only phone query matches */
