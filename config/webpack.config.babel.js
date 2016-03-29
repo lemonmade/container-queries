@@ -1,6 +1,4 @@
-/* eslint no-var: 0 */
-
-module.exports = {
+export default {
   module: {
     loaders: [
       {
