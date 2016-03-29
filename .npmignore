@@ -6,4 +6,4 @@
 /.gitignore
 /.npmignore
 /.travis.yml
-/webpack.*
+/config
