@@ -92,8 +92,8 @@ This plugin includes styling utilities for a variety of pre- and post-processors
 [dependency-url]: https://david-dm.org/lemonmade/container-queries
 [dependency-image]: https://david-dm.org/lemonmade/container-queries.svg
 
-[devDependency-url]: https://david-dm.org/lemonmade/container-queries
-[devDependency-image]: https://david-dm.org/lemonmade/container-queries.svg
+[devDependency-url]: https://david-dm.org/lemonmade/container-queries/dev-status.svg
+[devDependency-image]: https://david-dm.org/lemonmade/container-queries#info=devDependencies
 
 [npm-url]: https://npmjs.org/package/container-queries
 [npm-image]: http://img.shields.io/npm/v/container-queries.svg?style=flat-square
