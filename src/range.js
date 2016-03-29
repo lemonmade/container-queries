@@ -26,8 +26,8 @@ const maxInclusiveRegex = /(<=|\.)/;
 const minRegex = /(>?=?)(\d+)[^\.>]*(>?)/;
 
 export function minMaxInclusiveFromIdentifier(identifier) {
-  let result = {};
-  let inclusivity = new Inclusivity();
+  const result = {};
+  const inclusivity = new Inclusivity();
 
   identifier
     .replace(maxRegex, (match, condition, number) => {
@@ -54,7 +54,7 @@ function interiorForInclusivity(inclusivity) {
 }
 
 export function effectiveMinMax(min, max, {withInclusivity: inclusivity}) {
-  let result = {};
+  const result = {};
   if (min != null) { result.min = inclusivity.min ? min : min + 1; }
   if (max != null) { result.max = inclusivity.max ? max : max - 1; }
   return result;

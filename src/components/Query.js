@@ -4,8 +4,8 @@ let queryIndex = 1;
 
 export default class Query {
   constructor({test, identifier, min, max, inclusive} = {}) {
-    let inclusivity = new Inclusivity(inclusive);
-    let {min: adjustedMin, max: adjustedMax} = effectiveMinMax(min, max, {withInclusivity: inclusivity});
+    const inclusivity = new Inclusivity(inclusive);
+    const {min: adjustedMin, max: adjustedMax} = effectiveMinMax(min, max, {withInclusivity: inclusivity});
 
     this.identifier = identifier || identifierForMinMax(min, max, {withInclusivity: inclusivity}) || `ContainerQuery${queryIndex++}`;
     this.matches = false;
@@ -23,11 +23,11 @@ export default class Query {
   }
 
   update(width) {
-    let lastMatches = this.matches;
+    const lastMatches = this.matches;
     this.matches = this.test(width);
 
     if (this.matches !== lastMatches) {
-      for (let listener of this._listeners) { listener(this); }
+      for (const listener of this._listeners) { listener(this); }
     }
 
     return this.matches;

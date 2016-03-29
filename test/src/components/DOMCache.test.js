@@ -1,6 +1,5 @@
-import '../../helper';
-
-import DOMCache from '../../../src/components/DOMCache';
+import 'test-helper';
+import DOMCache from 'components/DOMCache';
 
 describe('DOMCache', () => {
   const key = 'foo';

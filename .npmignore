@@ -7,4 +7,3 @@
 /.npmignore
 /.travis.yml
 /webpack.*
-/karma.*

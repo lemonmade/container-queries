@@ -10,7 +10,7 @@ const DOMCache = Object.freeze({
   },
 
   setValueForNode(node, {key, value}) {
-    let currentCache = cache.get(node) || {};
+    const currentCache = cache.get(node) || {};
     currentCache[key] = value;
     cache.set(node, currentCache);
   },

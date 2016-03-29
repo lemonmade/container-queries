@@ -13,15 +13,15 @@ export default class ContainerQuery extends UIComponent {
     super(node);
     this.queries = queries.concat(queriesFromNode(node)).map((query) => new Query(query));
 
-    this.update = ::this.update;
+    this.update = this.update.bind(this);
     this.resizeDetector = ResizeDetector.create(this.node && this.node.parentNode);
     this.resizeDetector.addListener(this.update);
   }
 
   update(width = this.resizeDetector.width) {
-    let {queries, node} = this;
+    const {queries, node} = this;
 
-    let matches = queries.filter((query) => {
+    const matches = queries.filter((query) => {
       query.update(width);
       return query.matches;
     }).map((query) => query.identifier);
@@ -30,14 +30,14 @@ export default class ContainerQuery extends UIComponent {
   }
 
   addQuery(query) {
-    let newQuery = new Query(query);
+    const newQuery = new Query(query);
     this.queries.push(newQuery);
     this.update();
     return newQuery;
   }
 
   addQueries(allQueries) {
-    let newQueries = allQueries.map((options) => new Query(options));
+    const newQueries = allQueries.map((options) => new Query(options));
     this.queries = this.queries.concat(newQueries);
     this.update();
     return newQueries;
@@ -58,10 +58,10 @@ export default class ContainerQuery extends UIComponent {
 const queryExtractor = /([^:,\s]+):\s+([^,\s]+)/g;
 
 function queriesFromNode(node) {
-  let attribute = node.getAttribute(containerQueryAttribute);
+  const attribute = node.getAttribute(containerQueryAttribute);
   if (!attribute) { return []; }
 
-  let queries = [];
+  const queries = [];
   let match = queryExtractor.exec(attribute);
 
   while (match) {

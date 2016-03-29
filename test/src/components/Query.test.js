@@ -1,6 +1,5 @@
-import '../../helper';
-
-import Query from '../../../src/components/Query';
+import 'test-helper';
+import Query from 'components/Query';
 
 describe('Query', () => {
   describe('#identifier', () => {
@@ -8,55 +7,55 @@ describe('Query', () => {
     const max = 1000;
 
     it('uses a supplied identifier', () => {
-      let identifier = 'foo-query';
-      let query = new Query({identifier});
+      const identifier = 'foo-query';
+      const query = new Query({identifier});
 
       expect(query.identifier).to.equal(identifier);
     });
 
     it('creates an identifier from a min value', () => {
-      let query = new Query({min});
+      const query = new Query({min});
       expect(query.identifier).to.equal(`>=${min}`);
     });
 
     it('creates an identifier from an exclusive min value', () => {
-      let query = new Query({min, inclusive: false});
+      const query = new Query({min, inclusive: false});
       expect(query.identifier).to.equal(`>${min}`);
     });
 
     it('creates an identifier from a max value', () => {
-      let query = new Query({max});
+      const query = new Query({max});
       expect(query.identifier).to.equal(`<=${max}`);
     });
 
     it('creates an identifier from an exclusive max value', () => {
-      let query = new Query({max, inclusive: false});
+      const query = new Query({max, inclusive: false});
       expect(query.identifier).to.equal(`<${max}`);
     });
 
     it('creates an identifier from a min and max value', () => {
-      let query = new Query({min, max});
+      const query = new Query({min, max});
       expect(query.identifier).to.equal(`${min}...${max}`);
     });
 
     it('creates an identifier from an exclusive min and inclusive max value', () => {
-      let query = new Query({min, max, inclusive: 'max'});
+      const query = new Query({min, max, inclusive: 'max'});
       expect(query.identifier).to.equal(`${min}>..${max}`);
     });
 
     it('creates an identifier from an inclusive min and exclusive max value', () => {
-      let query = new Query({min, max, inclusive: 'min'});
+      const query = new Query({min, max, inclusive: 'min'});
       expect(query.identifier).to.equal(`${min}..<${max}`);
     });
 
     it('creates an identifier from an exclusive min and max value', () => {
-      let query = new Query({min, max, inclusive: false});
+      const query = new Query({min, max, inclusive: false});
       expect(query.identifier).to.equal(`${min}>..<${max}`);
     });
 
     it('uses a unique identifier for queries without min/ max/ identifier', () => {
-      let queryOne = new Query();
-      let queryTwo = new Query({test() {}});
+      const queryOne = new Query();
+      const queryTwo = new Query({test: sinon.spy()});
 
       expect(queryOne.identifier).to.be.a('string');
       expect(queryTwo.identifier).to.be.a('string');
@@ -69,16 +68,16 @@ describe('Query', () => {
     const maxCutoff = 1000;
 
     it('uses the passed test parameter', () => {
-      let test = sinon.spy(() => 'foo');
-      let query = new Query({test});
-      let result = query.test(minCutoff);
+      const test = sinon.spy(() => 'foo');
+      const query = new Query({test});
+      const result = query.test(minCutoff);
 
       expect(test).to.have.been.called;
       expect(result).to.equal('foo');
     });
 
     it('uses a passed minimum', () => {
-      let query = new Query({min: minCutoff});
+      const query = new Query({min: minCutoff});
 
       expect(query.test(minCutoff)).to.be.true;
       expect(query.test(minCutoff + 1)).to.be.true;
@@ -87,7 +86,7 @@ describe('Query', () => {
     });
 
     it('uses a passed exclusive minimum', () => {
-      let query = new Query({min: minCutoff, inclusive: false});
+      const query = new Query({min: minCutoff, inclusive: false});
 
       expect(query.test(minCutoff)).to.be.false;
       expect(query.test(minCutoff + 1)).to.be.true;
@@ -95,7 +94,7 @@ describe('Query', () => {
     });
 
     it('uses a passed maximum', () => {
-      let query = new Query({max: maxCutoff});
+      const query = new Query({max: maxCutoff});
 
       expect(query.test(maxCutoff)).to.be.true;
       expect(query.test(maxCutoff - 1)).to.be.true;
@@ -104,7 +103,7 @@ describe('Query', () => {
     });
 
     it('uses a passed exclusive maximum', () => {
-      let query = new Query({max: maxCutoff, inclusive: false});
+      const query = new Query({max: maxCutoff, inclusive: false});
 
       expect(query.test(maxCutoff)).to.be.false;
       expect(query.test(maxCutoff - 1)).to.be.true;
@@ -112,7 +111,7 @@ describe('Query', () => {
     });
 
     it('uses a minimum and maximum', () => {
-      let query = new Query({min: minCutoff, max: maxCutoff});
+      const query = new Query({min: minCutoff, max: maxCutoff});
 
       expect(query.test(minCutoff)).to.be.true;
       expect(query.test(minCutoff + 1)).to.be.true;

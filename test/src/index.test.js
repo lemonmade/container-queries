@@ -1,7 +1,6 @@
-import '../helper';
-
+import 'test-helper';
 import DefaultExport from '../../src/index';
-import ContainerQuery from '../../src/components/ContainerQuery';
+import ContainerQuery from 'components/ContainerQuery';
 
 describe('ContainerQuery', () => {
   it('exports the ContainerQuery class', () => {

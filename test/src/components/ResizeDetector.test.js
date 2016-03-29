@@ -1,6 +1,5 @@
-import '../../helper';
-
-import ResizeDetector from '../../../src/components/ResizeDetector';
+import 'test-helper';
+import ResizeDetector from 'components/ResizeDetector';
 
 describe('ResizeDetector', () => {
   let objectStub;
@@ -63,7 +62,7 @@ describe('ResizeDetector', () => {
     it('appends an out-of-document-flow object to the root node', () => {
       detector.addListener(sinon.spy());
 
-      let expectedStyle = {
+      const expectedStyle = {
         display: 'block',
         position: 'absolute',
         top: 0,
@@ -78,7 +77,7 @@ describe('ResizeDetector', () => {
       expect(objectStub).to.have.property('tabindex', -1);
       expect(objectStub).to.have.property('data', 'about:blank');
 
-      let style = objectStub.style.cssText;
+      const style = objectStub.style.cssText;
       Object.keys(expectedStyle).forEach((property) => {
         expect(style).to.include(`${property}: ${expectedStyle[property]}`);
       });
@@ -107,7 +106,7 @@ describe('ResizeDetector', () => {
       objectStub.onload({target: objectStub});
       expect(detector.update).to.have.been.called;
 
-      let addEventListenerArgs = objectStub.contentDocument.defaultView.addEventListener.firstCall.args;
+      const addEventListenerArgs = objectStub.contentDocument.defaultView.addEventListener.firstCall.args;
       addEventListenerArgs[1]();
       expect(addEventListenerArgs[0]).to.equal('resize');
       expect(detector.update).to.have.been.calledTwice;
@@ -194,7 +193,7 @@ describe('ResizeDetector', () => {
     });
 
     it('uses the offsetWidth of the node if present', () => {
-      let width = 555;
+      const width = 555;
       node.offsetWidth = width;
       expect(detector.width).to.equal(width);
     });

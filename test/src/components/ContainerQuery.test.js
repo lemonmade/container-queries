@@ -1,8 +1,7 @@
-import '../../helper';
-
-import ContainerQuery from '../../../src/components/ContainerQuery';
-import ResizeDetector from '../../../src/components/ResizeDetector';
-import {Inclusivity} from '../../../src/range';
+import 'test-helper';
+import ContainerQuery from 'components/ContainerQuery';
+import ResizeDetector from 'components/ResizeDetector';
+import {Inclusivity} from 'range';
 
 describe('ContainerQuery', () => {
   const cutoff = 500;
@@ -54,7 +53,7 @@ describe('ContainerQuery', () => {
       const name = 'myQuery_strange-name_33';
 
       function setNodeDataAttribute(value) {
-        node.setAttribute(`data-container-queries`, /:/.test(value) ? value : `${name}: ${value}`);
+        node.setAttribute('data-container-queries', /:/.test(value) ? value : `${name}: ${value}`);
         cq.destroy();
         cq = new ContainerQuery(node);
       }
@@ -65,7 +64,7 @@ describe('ContainerQuery', () => {
       }
 
       function testWidthsAroundCutoffs({min = false, max = false, inclusive = true}) {
-        let inclusivity = new Inclusivity(inclusive);
+        const inclusivity = new Inclusivity(inclusive);
 
         if (min) {
           setWidthAndUpdate(minCutoff - 1);
@@ -181,8 +180,8 @@ describe('ContainerQuery', () => {
       });
 
       it('attaches multiple, comma-separated named data queries', () => {
-        let large = 'largeDown';
-        let small = 'smallUp';
+        const large = 'largeDown';
+        const small = 'smallUp';
         setNodeDataAttribute(`${small}: >${minCutoff}, ${large}: <=${maxCutoff}`);
 
         setWidthAndUpdate(minCutoff - 1);
@@ -236,7 +235,7 @@ describe('ContainerQuery', () => {
     });
 
     it('includes multiple matching queries as a space-separated list', () => {
-      let queryTwo = cq.addQuery({min: cutoff - 1});
+      const queryTwo = cq.addQuery({min: cutoff - 1});
       cq.update(cutoff + 1);
       expect(node.getAttribute('data-container-query-matches')).to.equal(`${query.identifier} ${queryTwo.identifier}`);
     });
@@ -248,7 +247,7 @@ describe('ContainerQuery', () => {
     });
 
     it('immediately evaluates the new query', () => {
-      let query = cq.addQuery({test: sinon.stub().returns(true)});
+      const query = cq.addQuery({test: sinon.stub().returns(true)});
       expect(query.test).to.have.been.calledWith(resizeDetectorStub.width);
       expect(node.getAttribute('data-container-query-matches')).to.equal(query.identifier);
     });
@@ -256,7 +255,7 @@ describe('ContainerQuery', () => {
 
   describe('#addQueries', () => {
     it('adds all queries and runs them once immediately', () => {
-      let queries = cq.addQueries([
+      const queries = cq.addQueries([
         {test: sinon.stub().returns(true)},
         {test: sinon.stub().returns(true)},
       ]);

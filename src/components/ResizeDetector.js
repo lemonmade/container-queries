@@ -4,7 +4,7 @@ export default class ResizeDetector extends UIComponent {
   constructor(node) {
     super(node);
     this._listeners = [];
-    this.update = ::this.update;
+    this.update = this.update.bind(this);
   }
 
   get width() {
@@ -16,7 +16,7 @@ export default class ResizeDetector extends UIComponent {
   }
 
   update() {
-    let {width, _listeners} = this;
+    const {width, _listeners} = this;
     _listeners.forEach((listener) => listener(width));
   }
 
@@ -41,7 +41,7 @@ export default class ResizeDetector extends UIComponent {
   }
 }
 
-let objectStyle = `
+const objectStyle = `
   display: block;
   position: absolute;
   top: 0;
@@ -54,15 +54,15 @@ let objectStyle = `
 `;
 
 function createResizeObject(detector) {
-  let {node, update} = detector;
+  const {node, update} = detector;
   if (node == null) { return null; }
 
-  let obj = document.createElement('object');
+  const obj = document.createElement('object');
   obj.style.cssText = objectStyle;
   obj.tabindex = -1;
 
   obj.onload = (event) => {
-    let content = event.target.contentDocument.defaultView;
+    const content = event.target.contentDocument.defaultView;
     content.addEventListener('resize', update);
     update();
 
@@ -76,7 +76,7 @@ function createResizeObject(detector) {
   return obj;
 }
 
-let relativePositionValues = ['relative', 'absolute', 'fixed'];
+const relativePositionValues = ['relative', 'absolute', 'fixed'];
 
 function positionNodeRelatively(node) {
   if (relativePositionValues.indexOf(getComputedStyle(node, 'position')) < 0) {

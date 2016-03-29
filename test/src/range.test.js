@@ -1,11 +1,10 @@
-import '../helper';
-
-import {Inclusivity, identifierForMinMax, effectiveMinMax, minMaxInclusiveFromIdentifier} from '../../src/range';
+import 'test-helper';
+import {Inclusivity, identifierForMinMax, effectiveMinMax, minMaxInclusiveFromIdentifier} from 'range';
 
 describe('range utilities', () => {
   describe('Inclusivity', () => {
     it('identifies full inclusivity', () => {
-      let inclusivity = new Inclusivity(true);
+      const inclusivity = new Inclusivity(true);
 
       expect(inclusivity.min).to.be.true;
       expect(inclusivity.max).to.be.true;
@@ -15,7 +14,7 @@ describe('range utilities', () => {
     });
 
     it('identifies min inclusivity', () => {
-      let inclusivity = new Inclusivity('min');
+      const inclusivity = new Inclusivity('min');
 
       expect(inclusivity.min).to.be.true;
       expect(inclusivity.max).to.be.false;
@@ -25,7 +24,7 @@ describe('range utilities', () => {
     });
 
     it('identifies max inclusivity', () => {
-      let inclusivity = new Inclusivity('max');
+      const inclusivity = new Inclusivity('max');
 
       expect(inclusivity.min).to.be.false;
       expect(inclusivity.max).to.be.true;
@@ -35,7 +34,7 @@ describe('range utilities', () => {
     });
 
     it('identifies full exclusivity', () => {
-      let inclusivity = new Inclusivity(false);
+      const inclusivity = new Inclusivity(false);
 
       expect(inclusivity.min).to.be.false;
       expect(inclusivity.max).to.be.false;
@@ -52,8 +51,8 @@ describe('range utilities', () => {
     function testAllValuesForMinMaxInclusivity(theMin, theMax, inclusivity, expectedIdentifier) {
       expect(identifierForMinMax(theMin, theMax, {withInclusivity: inclusivity})).to.equal(expectedIdentifier);
 
-      let {min: parsedMin, max: parsedMax, inclusive} = minMaxInclusiveFromIdentifier(expectedIdentifier);
-      let {min: effectiveMin, max: effectiveMax} = effectiveMinMax(theMin, theMax, {withInclusivity: inclusivity});
+      const {min: parsedMin, max: parsedMax, inclusive} = minMaxInclusiveFromIdentifier(expectedIdentifier);
+      const {min: effectiveMin, max: effectiveMax} = effectiveMinMax(theMin, theMax, {withInclusivity: inclusivity});
 
       if (theMin == null) {
         expect(parsedMin).to.be.undefined;
@@ -92,7 +91,7 @@ describe('range utilities', () => {
     });
 
     it('handles zeros', () => {
-      testAllValuesForMinMaxInclusivity(0, 0, new Inclusivity(true), `0...0`);
+      testAllValuesForMinMaxInclusivity(0, 0, new Inclusivity(true), '0...0');
     });
 
     it('handles no min and no max', () => {

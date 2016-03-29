@@ -1,7 +1,6 @@
-import '../../helper';
-
-import UIComponent from '../../../src/components/UIComponent';
-import DOMCache from '../../../src/components/DOMCache';
+import 'test-helper';
+import UIComponent from 'components/UIComponent';
+import DOMCache from 'components/DOMCache';
 
 describe('UIComponent', () => {
   let nodeOne;
@@ -38,7 +37,7 @@ describe('UIComponent', () => {
     it('returns the cached object for the component identifier', () => {
       expect(MyComponent.for(nodeOne)).to.be.undefined;
 
-      let cachedObject = {foo: 'bar'};
+      const cachedObject = {foo: 'bar'};
       DOMCache.setValueForNode(nodeOne, {key: MyComponent.identifier, value: cachedObject});
       expect(MyComponent.for(nodeOne)).to.equal(cachedObject);
     });
@@ -68,7 +67,7 @@ describe('UIComponent', () => {
 
     context('when a node is passed', () => {
       it('returns a non-null result of .for()', () => {
-        let myObject = {};
+        const myObject = {};
         MyComponent.for.returns(myObject);
 
         expect(MyComponent.create(nodeOne)).to.equal(myObject);
@@ -87,7 +86,7 @@ describe('UIComponent', () => {
 
     context('when an array-like is passed', () => {
       it('creates returns an array of constructed objects', () => {
-        let created = MyComponent.create(document.querySelectorAll(`.${nodeOne.className}`));
+        const created = MyComponent.create(document.querySelectorAll(`.${nodeOne.className}`));
         MyComponent.for.restore();
 
         expect(created).to.have.length(2);
@@ -117,7 +116,7 @@ describe('UIComponent', () => {
       it('creates and returns an array of constructed objects from querying the selector', () => {
         expect(MyComponent.create('.not-matching')).to.be.empty;
 
-        let created = MyComponent.create(`.${nodeOne.className}`);
+        const created = MyComponent.create(`.${nodeOne.className}`);
         MyComponent.for.restore();
 
         expect(created).to.have.length(2);
@@ -137,8 +136,8 @@ describe('UIComponent', () => {
     });
 
     it('calls create for every node matching the selector', () => {
-      let nodes = [nodeOne, nodeTwo];
-      let created = MyComponent.createAllWithin(document.body);
+      const nodes = [nodeOne, nodeTwo];
+      const created = MyComponent.createAllWithin(document.body);
 
       expect(MyComponent.create).to.have.been.calledWith(nodes);
       expect(created).to.deep.equal(nodes);
@@ -160,7 +159,7 @@ describe('UIComponent', () => {
 
   describe('.destroyAllWithin()', () => {
     it('calls destroy on all contained object instances', () => {
-      let components = [nodeOne, nodeTwo].map((node) => new MyComponent(node));
+      const components = [nodeOne, nodeTwo].map((node) => new MyComponent(node));
       components.forEach((component) => sinon.spy(component, 'destroy'));
 
       MyComponent.destroyAllWithin(document.body);
@@ -192,7 +191,7 @@ describe('UIComponent', () => {
       it('only returns objects that have actually been created', () => {
         myComponent = new MyComponent(nodeTwo);
 
-        let allWithin = MyComponent.allWithin(document.body);
+        const allWithin = MyComponent.allWithin(document.body);
         expect(allWithin).to.have.length(1);
         expect(allWithin[0]).to.equal(MyComponent.for(nodeTwo));
         expect(allWithin[0]).to.equal(myComponent);
@@ -202,9 +201,9 @@ describe('UIComponent', () => {
         class OtherComponent extends UIComponent {}
 
         myComponent = new MyComponent(nodeOne);
-        let otherComponent = new OtherComponent(nodeTwo);
+        const otherComponent = new OtherComponent(nodeTwo);
 
-        let allWithin = MyComponent.allWithin(document.body);
+        const allWithin = MyComponent.allWithin(document.body);
         expect(allWithin).to.have.length(1);
         expect(allWithin[0]).to.equal(MyComponent.for(nodeOne));
         expect(allWithin[0]).not.to.equal(otherComponent);
